@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     int monsterCount;
     char input[4096];
     char playerName[20];
-    char nameArray[10][10] = {"dracula", "monster1", "gotham", "monster2", "hellboy", "joker", "monster3", "naruto", "monster4", "monster5"};
+    char nameArray[10][10] = { "dracula", "monster1", "gotham", "monster2", "hellboy", "joker", "monster3", "naruto", "monster4", "monster5" };
     int nameArrayPointer = 0;
     int xDir = 0;
     int yDir = 0;
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     cout << "Welcome to Monsters Chase!\n";
     cout << "How many Monsters do you want to play with?\n";
     cin >> monsterCount;
-    char** monsterName = new char *[monsterCount];
+    char** monsterName = new char* [monsterCount];
     /*char** monsterName1 = malloc(monsterCount * sizeof(char));*/
     /*for (int i = 0; i < monsterCount; i++)
         monsterName[i] = new char[10];*/
@@ -39,8 +39,6 @@ int main(int argc, char* argv[])
         monsterName[i] = new char[strlen(input) + 1];
         memcpy(monsterName[i], input, strlen(input) + 1);
     }
-    for (int i = 0; i < monsterCount; i++) 
-        cout << monsterName[i] << "\n";
     int value;
     do {
         if (monsterCount >= 5)
@@ -71,7 +69,7 @@ int main(int argc, char* argv[])
         }
         if (value == 109) { //m add monster
             //add monster
-            monsterCount++;
+            /*monsterCount++;
             char** new_monsterName = new char* [monsterCount];
             memcpy(new_monsterName, monsterName, monsterCount);
             delete[] monsterName;
@@ -79,14 +77,15 @@ int main(int argc, char* argv[])
             memcpy(monsterName, new_monsterName, monsterCount);
             delete[] new_monsterName;
             monsterName[monsterCount - 1] = nameArray[nameArrayPointer];
-            nameArrayPointer = nameArrayPointer == 9 ? 0 : nameArrayPointer++;
+            nameArrayPointer = nameArrayPointer == 9 ? 0 : nameArrayPointer++;*/
         }
         if (value == 113) { //q quit
             //Delete the array created
-            for (int i = 0; i < monsterCount; ++i)    //To delete the inner arrays
-                delete monsterName[i];
+            for (int i = 0; i < monsterCount; i++) {    //To delete the inner arrays
+                delete[] monsterName[i];
+            }
             delete[] monsterName;
-            
+
             return 0;
         }
     } while (value != 113);
