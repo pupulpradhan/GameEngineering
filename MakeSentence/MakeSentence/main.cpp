@@ -22,7 +22,7 @@ char* MakeSentence(const char* strings[]) {
 	}
 	int SizeOfSentence = TotalSizeOfArray + SizeOfArray + 1;
 	char* sentence = (char*)malloc(sizeof(char) * SizeOfSentence);
-	strcpy(sentence, "\0");
+	memset(sentence, '\0', sizeof(sentence));
 	for (int i = 0; i < SizeOfArray; i++) {
 		strcat(sentence, strings[i]);
 		if (i != SizeOfArray - 1) {
