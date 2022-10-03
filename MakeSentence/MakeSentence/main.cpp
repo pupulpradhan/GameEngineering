@@ -5,11 +5,14 @@
 #else
 #include <stdlib.h>
 #endif // _DEBUG
+#include <conio.h>
 #include <iostream>
+#include <string>
+
 using namespace std;
 
 // This is only a simple unit test. 
-char* MakeSentence(const char* strings[]) {
+char* MakeSentence(char* strings[]) {
 	const char* space = " ";
 	const char* period = ".";
 	int SizeOfArray = 0;
@@ -30,21 +33,50 @@ char* MakeSentence(const char* strings[]) {
 		}
 	}
 	strcat(sentence, period);
-	//cout << "Sentence : " << sentence << endl;
+	cout << "Sentence : " << sentence << endl;
 	return sentence;
 }
 
 
 int main(int i_argc, char** i_argl)
 {
-	const char* strings[] = {
-		"This",
-		"is",
-		"a",
-		"test",
-		NULL
-	};
-
+	
+	char* strings[20] = {0};
+	int size = 0;
+	
+	do {
+		char InputWord[10];
+		int k = 0;
+		char ch;
+		cout << "Enter a word for the sentence. Enter to end : ";
+		while((ch = _getch()) != '\r') {
+			InputWord[k] = ch;
+			cout << "*";
+			k++;
+		}
+		InputWord[k] = '\0';
+		int InputWordSize = 0;
+		cout << "Entered word is: " << InputWord << endl;
+		while (InputWord[InputWordSize] != NULL) InputWordSize++;
+		
+		if (InputWordSize > 0) {
+			strings[size] = (char*)malloc(InputWordSize + 1);
+			strcpy(strings[size], InputWord);
+			cout << "strlen : " << strlen(InputWord) << endl;
+			cout << "index : " << size << endl;
+			cout << "Entered word is: " << strings[size] << endl;
+			size++; 
+		}
+		else {
+			strings[size] = (char*)malloc(1);
+			strings[size] = NULL;
+			break; 
+		}
+	} while (1);
+	cout << "Out of do while "  << endl;
+	for (int i = 0; i < size; i++) {
+		cout << "strings[" << i << "] : " << strings[i] << endl;
+	}
 	char* pSentence = MakeSentence(strings);
 
 	cout<<"The Sentence is : "<< pSentence;
