@@ -91,7 +91,7 @@ int main()
     } while (value != 113);
  
     free(Monsters);
-    delete playerName;
-    delete input;
+    delete[] playerName;
+    delete[] input;
 
 }
