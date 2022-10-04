@@ -82,5 +82,5 @@ int main()
     free(Monsters);
     delete[] playerName;
     delete[] input;
-
+    _CrtDumpMemoryLeaks();
 }
