@@ -75,9 +75,10 @@ int main(int argc, char* argv[])
             }
         }
         if (value == 113) { //q quit
+            _CrtDumpMemoryLeaks();
             return 0;
         }
     } while (value != 113);
-
+    
 
 }
