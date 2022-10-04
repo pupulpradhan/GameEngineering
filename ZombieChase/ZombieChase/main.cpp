@@ -31,23 +31,12 @@ int main()
         Monsters[i].setname(input);
         Monsters[i].setpos(Point2D(i, i + 2));
     }
-    /*for (int i = 0; i < monsterCount; i++) {
-        cout << monsterName[i];
-    }*/
     int value;
     do {
-        if (Monsters[0].getpos().getx() >= 50)
+        if (Monsters[0].getpos().getx() >= 30) {
+            Monsters[0].setpos(Point2D(0, 0));
             monsterCount--;
-
-        /*GameObject* Monsters_new = (GameObject*)realloc(Monsters, sizeof(GameObject) * monsterCount);
-        if (Monsters_new == NULL) {
-            exit(1);
         }
-        else {
-            Monsters = Monsters_new;
-            free(Monsters_new);
-        }*/
-
         cout << "Monsters: \n";
         for (int i = 0; i < monsterCount; i++) {
             cout << Monsters[i].getname() << " is at " << "[ " << Monsters[i].getpos().getx() << ", " << Monsters[i].getpos().gety() << "]\n";
