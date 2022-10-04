@@ -75,12 +75,12 @@ int main()
             }
         }
         if (value == 113) { //q quit
+            free(Monsters);
+            delete[] playerName;
+            delete[] input;
+            _CrtDumpMemoryLeaks();
             return 0;
         }
     } while (value != 113);
  
-    free(Monsters);
-    delete[] playerName;
-    delete[] input;
-    _CrtDumpMemoryLeaks();
 }
