@@ -75,6 +75,10 @@ int main(int argc, char* argv[])
             }
         }
         if (value == 113) { //q quit
+            for (int i = 0; i < monsterCount; i++) {
+                free(monsterName[i]);
+            }
+            free(monsterName);
             _CrtDumpMemoryLeaks();
             return 0;
         }
