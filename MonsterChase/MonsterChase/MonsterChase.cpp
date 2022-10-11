@@ -27,8 +27,8 @@ int main(int argc, char* argv[])
     for (int i = 0; i < monsterCount; i++) {
         cout << "\nEnter the name for Monster " << i << ":\t";
         cin >> input;
-        monsterName[i] = (char*)malloc((strlen(input) + 1) * sizeof(char));
-        memcpy(monsterName[i], input, strlen(input)+1);
+        monsterName[i] = (char*)malloc((strlen(input) + 1));
+        strcpy_s(monsterName[i], strlen(input) + 1, input);
     }
     /*for (int i = 0; i < monsterCount; i++) {
         cout << monsterName[i];
@@ -70,7 +70,9 @@ int main(int argc, char* argv[])
             }
             else {
                 monsterName = new_monsterName;
-                monsterName[monsterCount-1] = nameArray[nameArrayPointer];
+                monsterName[monsterCount - 1] = (char*)malloc((strlen(nameArray[nameArrayPointer]) + 1));
+                strcpy_s(monsterName[monsterCount - 1], strlen(nameArray[nameArrayPointer]) + 1, nameArray[nameArrayPointer]);
+                //monsterName[monsterCount-1] = nameArray[nameArrayPointer];
                 nameArrayPointer = nameArrayPointer==9 ? 0 : nameArrayPointer+1;
             }
         }
