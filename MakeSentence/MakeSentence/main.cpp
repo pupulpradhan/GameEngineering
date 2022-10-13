@@ -68,7 +68,7 @@ int main(int i_argc, char** i_argl)
 			size++; 
 		}
 		else {
-			strings[size] = (char*)malloc(1);
+			//strings[size] = (char*)malloc(1);
 			strings[size] = NULL;
 			break; 
 		}
@@ -80,8 +80,11 @@ int main(int i_argc, char** i_argl)
 	char* pSentence = MakeSentence(strings);
 
 	cout<<"The Sentence is : "<< pSentence;
+	
+	for (int i = 0; i < size; i++) {
+		free(strings[i]);
+	}
 	free(pSentence);
-
 	#if defined(_DEBUG)
 		_CrtDumpMemoryLeaks();
 	#endif // _DEBUG
