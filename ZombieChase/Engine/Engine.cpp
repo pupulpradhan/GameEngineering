@@ -1,10 +1,14 @@
 #include "Engine.h"
 #include <iostream>
 #include <string.h>
+using namespace std;
 
 GameObject::GameObject() {
     name = { 0 };
     pos = Point2D();
+}
+GameObject::~GameObject() {
+    cout << "name deleted";
 }
 GameObject::GameObject(char objName, Point2D objPos) {
     name = &objName;

@@ -75,9 +75,14 @@ int main()
             }
         }
         if (value == 113) { //q quit
+            for (int i = 0; i < monsterCount; i++) {
+                free(Monsters[i].name);
+            }
+            free(Player.name);
             free(Monsters);
             delete[] playerName;
             delete[] input;
+            
             _CrtDumpMemoryLeaks();
             return 0;
         }

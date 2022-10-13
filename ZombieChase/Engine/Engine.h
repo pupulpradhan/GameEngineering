@@ -21,12 +21,13 @@ public:
 
 };
 class GameObject {
-private:
+public:
     char* name;
     Point2D pos;
-public:
+
     GameObject(char objName, Point2D objPos);
     GameObject();
+    ~GameObject();
     Point2D getpos();
     char* getname();
 
