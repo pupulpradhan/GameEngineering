@@ -35,6 +35,7 @@ int main()
     do {
         if (Monsters[0].getpos().getx() >= 30) {
             Monsters[0].setpos(Point2D(0, 0));
+            free(Monsters[monsterCount-1].name);
             monsterCount--;
         }
         cout << "Monsters: \n";
