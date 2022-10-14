@@ -35,8 +35,10 @@ int main(int argc, char* argv[])
     }*/
     int value;
     do {
-        if (xDir >= 50)
+        if (xDir >= 50) {
+            free(monsterName[monsterCount-1]);
             monsterCount--;
+        }
         cout << "Monsters: \n";
         for (int i = 0; i < monsterCount; i++) {
             xDir = xDir == 60 ? 0 : xDir + 2;
