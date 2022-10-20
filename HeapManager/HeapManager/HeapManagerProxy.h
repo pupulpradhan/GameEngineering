@@ -1,6 +1,6 @@
 #pragma once
 
-class heapManager {
+class HeapManager {
 
 };
 HeapManager* CreateHeapManager(void* pHeapMemory, const size_t sizeHeap, const unsigned int numDescriptors);
