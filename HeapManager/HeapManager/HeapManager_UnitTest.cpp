@@ -220,7 +220,7 @@ bool HeapManager_UnitTest()
 #endif
 
 		// do a large test allocation to see if garbage collection worked
-		void* pPtr = alloc(pHeapManager, sizeHeap / 2);
+		void* pPtr = alloc(pHeapManager, sizeHeap / 2, 0);
 		assert(pPtr);
 
 		if (pPtr)
