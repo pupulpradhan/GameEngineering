@@ -99,15 +99,3 @@ void* free(void* i_ptr)
 	pBlock->pNextBlock = FreeList;
 	FreeList = pBlock;
 }
-
-void main() {
-	const size_t 		sizeHeap = 1024 * 1024;
-	const unsigned int 	numDescriptors = 2048;
-	// Get SYSTEM_INFO, which includes the memory page size
-	SYSTEM_INFO SysInfo;
-	GetSystemInfo(&SysInfo);
-	// round our size to a multiple of memory page size
-	assert(SysInfo.dwPageSize > 0);
-	size_t sizeHeapInPageMultiples = SysInfo.dwPageSize * ((sizeHeap + SysInfo.dwPageSize) / SysInfo.dwPageSize);
-	pHeapMemory = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-}
