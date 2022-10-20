@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Windows.h>
+#include <cassert>
 
 struct MemoryBlock {
 	*void baseadd;
