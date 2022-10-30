@@ -127,10 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HeapManager.cpp" />
     <ClCompile Include="HeapManager_UnitTest.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="HeapManagerProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HeapManager.h" />
     <ClInclude Include="HeapManagerProxy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

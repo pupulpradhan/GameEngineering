@@ -1,27 +1,27 @@
 #pragma once
+#include <stdint.h>
 
-struct MemoryBlock {
-	void* baseadd;
-	size_t blocksize;
-	struct MemoryBlock* nextMemBlock;
-};
+class HeapManager;
 
-class HeapManager {
-public:
-	HeapManager* heapMemory;
-	MemoryBlock* freeList;
-	MemoryBlock* outstandingAllocations;
-	size_t size;
-	unsigned int descriptors;
+namespace HeapManagerProxy
+{
 
-	void* alloc(HeapManager* pHeapManager, size_t sizeAlloc, const unsigned int alignment);
-	void Collect(HeapManager* pHeapManager);
-	bool Contains(HeapManager* pHeapManager, void* pPtr);
-	bool free(HeapManager* pHeapManager, void* pPtr);
-	bool IsAllocated(HeapManager* pHeapManager, void* pPtr);
-	void ShowFreeBlocks(HeapManager* pHeapManager);
-	void ShowOutstandingAllocations(HeapManager* pHeapManager);
-	void Destroy(HeapManager* pHeapManager);
-};
-HeapManager* CreateHeapManager(void* pHeapMemory, const size_t sizeHeap, const unsigned int numDescriptors);
+	HeapManager* CreateHeapManager(void* i_pMemory, size_t i_sizeMemory, unsigned int i_numDescriptors);
+	void			Destroy(HeapManager* i_pManager);
 
+	void* alloc(HeapManager* i_pManager, size_t i_size);
+	void* alloc(HeapManager* i_pManager, size_t i_size, unsigned int i_alignment);
+	bool			free(HeapManager* i_pManager, void* i_ptr);
+
+	void			Collect(HeapManager* i_pManager);
+
+	bool			Contains(HeapManager* i_pManager, void* i_ptr);
+	bool			IsAllocated(HeapManager* i_pManager, void* i_ptr);
+
+	size_t			GetLargestFreeBlock(HeapManager* i_pManager);
+	size_t			GetTotalFreeMemory(HeapManager* i_pManager);
+
+	void			ShowFreeBlocks(HeapManager* i_pManager);
+	void			ShowOutstandingAllocations(HeapManager* i_pManager);
+
+} // namespace HeapManagerProxy
