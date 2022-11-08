@@ -30,7 +30,8 @@ bool HeapManager_UnitTest()
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	HeapManager* pHeapManager = CreateHeapManager(pHeapMemory, sizeHeap, numDescriptors);
+	HeapManager* pHeapManager = CreateHeapManager(
+		, sizeHeap, numDescriptors);
 	assert(pHeapManager);
 
 	if (pHeapManager == nullptr)
