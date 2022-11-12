@@ -1,4 +1,5 @@
 #include "HeapManagerProxy.h"
+#include "HeapManager_UnitTest.h"
 #include <Windows.h>
 
 #include <assert.h>
