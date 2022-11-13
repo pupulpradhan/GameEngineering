@@ -19,9 +19,14 @@ MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryByte
 	assert((pHeapMemory != nullptr) && (i_BlocksMemoryBytes > sizeof(MemoryBlock)));
 
 	MemoryBlock* pFreeList = reinterpret_cast<MemoryBlock*>(pHeapMemory);
+	pFreeList->baseadd = pHeapMemory;
+	pFreeList->blocksize = i_BlocksMemoryBytes;
+
 	const size_t NumberofBlocks = i_BlocksMemoryBytes / sizeof(MemoryBlock);
 
 	MemoryBlock* pCurrentBlock = pFreeList;
+	pCurrentBlock->baseadd = pFreeList->baseadd;
+	pCurrentBlock->blocksize = pFreeList->blocksize;
 	for (size_t i = 0; i < (NumberofBlocks - 1); i++, pCurrentBlock++)
 	{
 		pCurrentBlock->baseadd = nullptr;
@@ -48,9 +53,9 @@ HeapManager* HeapManager::create(void* pHeapMemory, const size_t sizeHeap, const
 	pHeapManager->freeList = FreeList;
 
 	MemoryBlock* OutstandingAllocations = nullptr;
-	/*OutstandingAllocations->baseadd = nullptr;
+	OutstandingAllocations->baseadd = nullptr;
 	OutstandingAllocations->blocksize = 0;
-	OutstandingAllocations->nextMemBlock = nullptr;*/
+	OutstandingAllocations->nextMemBlock = nullptr;
 	pHeapManager->outstandingAllocations = OutstandingAllocations;
 
 	return pHeapManager;
