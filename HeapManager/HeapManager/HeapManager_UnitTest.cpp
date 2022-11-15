@@ -1,4 +1,5 @@
 #include "HeapManagerProxy.h"
+#include "HeapManager_UnitTest.h"
 #include <Windows.h>
 
 #include <assert.h>
@@ -30,8 +31,7 @@ bool HeapManager_UnitTest()
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	HeapManager* pHeapManager = CreateHeapManager(
-		, sizeHeap, numDescriptors);
+	HeapManager* pHeapManager = CreateHeapManager(pHeapMemory, sizeHeap, numDescriptors);
 	assert(pHeapManager);
 
 	if (pHeapManager == nullptr)
