@@ -11,7 +11,7 @@ using namespace std;
 MemoryBlock* FreeMemoryList;
 size_t i_BlocksMemoryBytes = 1024 * 4;
 
-void InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
+MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
 {
 	assert((pHeapMemory != nullptr) && (i_BlocksMemoryBytes > sizeof(MemoryBlock)));
 
@@ -31,7 +31,7 @@ void InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
 	pCurrentBlock->baseadd = nullptr;
 	pCurrentBlock->blocksize = 0;
 	pCurrentBlock->nextMemBlock = nullptr;
-	//return pCurrentBlock;
+	return FreeMemoryList;
 }
 
 HeapManager* HeapManager::create(void* pHeapMemory, const size_t sizeHeap, const unsigned int numDescriptors) {
@@ -39,7 +39,7 @@ HeapManager* HeapManager::create(void* pHeapMemory, const size_t sizeHeap, const
 	//pHeapManager->heapMemory = static_cast<HeapManager*>(pHeapMemory);
 	pHeapManager->memBlockAdd = pHeapMemory;
 
-	InitializeMemoryBlocks(pHeapMemory, i_BlocksMemoryBytes);
+	FreeMemoryList = InitializeMemoryBlocks(pHeapMemory, i_BlocksMemoryBytes);
 
 	MemoryBlock* FreeList = static_cast<MemoryBlock*>(pHeapMemory) + i_BlocksMemoryBytes;
 	FreeList->baseadd = static_cast<MemoryBlock*>(pHeapMemory) + i_BlocksMemoryBytes;
@@ -68,7 +68,6 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 	MemoryBlock* prev = NULL;
 
 	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) {
-		//freeList = pFreeBlock->nextMemBlock;
 		pBlock->baseadd = pFreeBlock->baseadd;
 		pBlock->blocksize = sizeAlloc;
 		TrackAllocation(outstandingAllocations, pBlock);
