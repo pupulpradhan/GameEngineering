@@ -11,7 +11,7 @@ private:
 	void* memBlockAdd;
 	MemoryBlock* freeList;
 	MemoryBlock* outstandingAllocations;
-	//size_t size;
+	size_t size;
 	//unsigned int descriptors;
 public:
 	HeapManager* create(void* i_pMemory, size_t i_sizeMemory, unsigned int i_numDescriptors); //done
