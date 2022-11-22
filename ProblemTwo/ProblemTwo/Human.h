@@ -9,6 +9,8 @@
 // I am a GameActor that is a human being
 class Human : public GameActor
 {
+private:
+	const char* m_Name;
 public:
 	Human(const char* i_pName, const Engine::Math::Vector2& i_InitialPosition, int i_InitialHealth) :
 		GameActor(i_InitialPosition, i_InitialHealth),
@@ -25,7 +27,6 @@ public:
 
 	// return my specific type
 	virtual const char* getTypeName() const { return "Human"; }
-private:
-	const char* m_Name;
+
 };
 

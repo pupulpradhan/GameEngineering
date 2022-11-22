@@ -4,6 +4,9 @@
 // This is our base class for a GameActor, something in our world that moves and has health
 class GameActor
 {
+private:
+	Engine::Math::Vector2	m_Position;
+	int						m_Health;
 public:
 	GameActor(const Engine::Math::Vector2& i_InitialPosition, int i_InitialHealth) :
 		m_Position(i_InitialPosition),
@@ -28,7 +31,5 @@ public:
 	// each variant has it's own implementation
 	virtual const char* getTypeName() const = 0;
 
-private:
-	Engine::Math::Vector2	m_Position;
-	int						m_Health;
+
 };
