@@ -248,5 +248,6 @@ bool HeapManager_UnitTest()
 	}
 
 	// we succeeded
+	_CrtDumpMemoryLeaks();
 	return true;
 }

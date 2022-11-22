@@ -11,6 +11,7 @@ private:
 	void* memBlockAdd;
 	MemoryBlock* freeList;
 	MemoryBlock* outstandingAllocations;
+	MemoryBlock* tail;
 	size_t size;
 	//unsigned int descriptors;
 public:
