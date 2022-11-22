@@ -137,7 +137,7 @@ void* HeapManager::_alloc(size_t sizeAlloc) {
 MemoryBlock* RemoveOutstandingAllocation(MemoryBlock* outstandingAllocations, void* pPtr) {
 	MemoryBlock* freeBlock;
 	MemoryBlock* temp = outstandingAllocations;
-	MemoryBlock* prev = nullptr;
+	MemoryBlock* prev = outstandingAllocations;
 	if (temp != NULL && temp->baseadd != NULL && temp->baseadd == pPtr) {// if pPtr is the 1st elem
 		outstandingAllocations = temp->nextMemBlock;
 		freeBlock = static_cast<MemoryBlock*>(pPtr);
@@ -161,8 +161,9 @@ MemoryBlock* RemoveOutstandingAllocation(MemoryBlock* outstandingAllocations, vo
 
 bool HeapManager::_free(void* pPtr) {
 	//remove block for this pointer from OutstandingAllocations
-	MemoryBlock* refOutstandingAllocations = this->outstandingAllocations;
-	MemoryBlock* pBlock = RemoveOutstandingAllocation(refOutstandingAllocations, pPtr);
+	//MemoryBlock** refOutstandingAllocations = &outstandingAllocations;
+	MemoryBlock* pBlock = RemoveOutstandingAllocation(this->outstandingAllocations, pPtr);
+	
 	assert(pBlock);
 	//put the block on the Freelist
 
@@ -231,7 +232,7 @@ size_t HeapManager::getTotalFreeMemory()
 void HeapManager::ShowFreeBlocks(){
 	int i = 0;
 	while (freeList != nullptr) {
-		cout << "Free Block " << i << " : " << freeList->baseadd << "with size "<< freeList->blocksize<<endl;
+		cout << "Free Block " << i << " : " << freeList->baseadd << " with size "<< freeList->blocksize<<endl;
 		freeList = freeList->nextMemBlock;
 		i++;
 	}
