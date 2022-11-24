@@ -90,7 +90,7 @@ namespace HeapManagerProxy
 	void ShowOutstandingAllocations(HeapManager* i_pManager)
 	{
 		assert(i_pManager);
-
+		i_pManager->ShowOutstandingAllocations();
 #ifdef __TRACK_ALLOCATIONS
 		i_pManager->ShowOutstandingAllocations();
 #else
