@@ -78,15 +78,15 @@ MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size
 }
 
 void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
-	MemoryBlock* pBlock = FreeMemoryList;
-	FreeMemoryList = FreeMemoryList->nextMemBlock;
-	MemoryBlock* pFreeBlock = this->freeList;
-	MemoryBlock* prev = NULL;
 	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
 		cout << "FreeMemoryList Exhausted";
 		return nullptr;
 	}
-
+	MemoryBlock* pBlock = FreeMemoryList;
+	FreeMemoryList = FreeMemoryList->nextMemBlock;
+	MemoryBlock* pFreeBlock = this->freeList;
+	MemoryBlock* prev = NULL;
+	
 	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) { //1st block matches size
 		
 		pBlock->baseadd = pFreeBlock->baseadd;
@@ -211,13 +211,10 @@ bool HeapManager::_free(void* pPtr) {
 }
 
 void HeapManager::collect() {
-	while (freeList != NULL) {
-		if (freeList->nextMemBlock == NULL) {
-			break;
-		}
+	while (freeList != NULL && freeList->nextMemBlock != NULL) {
 		if (reinterpret_cast<MemoryBlock*>(reinterpret_cast<uintptr_t>(freeList->baseadd) + freeList->blocksize) == freeList->nextMemBlock->baseadd) {
-			freeList->nextMemBlock = freeList->nextMemBlock->nextMemBlock;
 			freeList->blocksize += freeList->nextMemBlock->blocksize;
+			freeList->nextMemBlock = freeList->nextMemBlock->nextMemBlock;
 		}
 		freeList = freeList->nextMemBlock;
 	}
