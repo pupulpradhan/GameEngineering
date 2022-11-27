@@ -119,34 +119,43 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 }
 
 void* HeapManager::_alloc(size_t sizeAlloc) {
+	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
+		cout << "FreeMemoryList Exhausted";
+		return nullptr;
+	}
 	MemoryBlock* pBlock = FreeMemoryList;
-	MemoryBlock* pFreeBlock = freeList;
+	FreeMemoryList = FreeMemoryList->nextMemBlock;
+	MemoryBlock* pFreeBlock = this->freeList;
 	MemoryBlock* prev = NULL;
 
-	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) {
+	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) { //1st block matches size
+
 		pBlock->baseadd = pFreeBlock->baseadd;
 		pBlock->blocksize = sizeAlloc;
-		TrackAllocation(outstandingAllocations, pBlock);
-		freeList += sizeAlloc;
-		freeList->blocksize -= sizeAlloc;
-		FreeMemoryList = FreeMemoryList->nextMemBlock;
+		pBlock->nextMemBlock = this->outstandingAllocations;
+		this->outstandingAllocations = pBlock;
+		this->freeList = ShrinkFreeList(this->freeList, pFreeBlock, sizeAlloc);
+
 		return pBlock->baseadd;
 	}
-	while (pFreeBlock && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize <= sizeAlloc) {
+	while (pFreeBlock->baseadd != NULL && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize <= sizeAlloc) { // matching block is somewhere in between
 		prev = pFreeBlock;
 		pFreeBlock = pFreeBlock->nextMemBlock;
 	}
-
-//check if no block is big enough
-	assert(pFreeBlock);
+	if (pFreeBlock == NULL) {
+		cout << "No matching blocksize found";
+		return nullptr;
+	}
+	//check if no block is big enough
 	pBlock->baseadd = pFreeBlock->baseadd;
 	pBlock->blocksize = sizeAlloc;
-	TrackAllocation(outstandingAllocations, pBlock);
+	pBlock->nextMemBlock = this->outstandingAllocations;
+	this->outstandingAllocations = pBlock;
+	//TrackAllocation(outstandingAllocations, pBlock);
 
 	//shrink block
-	freeList += sizeAlloc;
-	freeList->blocksize -= sizeAlloc;
-	FreeMemoryList = FreeMemoryList->nextMemBlock;
+	this->freeList = ShrinkFreeList(this->freeList, pFreeBlock, sizeAlloc);
+
 	return pBlock->baseadd;
 }
 
