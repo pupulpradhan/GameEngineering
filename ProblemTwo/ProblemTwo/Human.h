@@ -16,6 +16,11 @@ public:
 		GameActor(i_InitialPosition, i_InitialHealth),
 		m_Name(_strdup(i_pName ? i_pName : "Unknown"))
 	{ }
+	// Copy constructor
+	Human(const Human& h) : GameActor(h)
+	{
+		m_Name = h.m_Name;
+	}
 	~Human()
 	{
 		if (m_Name)
