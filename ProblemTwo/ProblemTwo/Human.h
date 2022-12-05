@@ -19,7 +19,7 @@ public:
 	// Copy constructor
 	Human(const Human& h) : GameActor(h)
 	{
-		m_Name = h.m_Name;
+		m_Name = _strdup(h.m_Name ? h.m_Name : "Unknown") ;
 	}
 	~Human()
 	{
