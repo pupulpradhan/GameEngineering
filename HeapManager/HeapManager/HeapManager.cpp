@@ -11,7 +11,7 @@ using namespace std;
 MemoryBlock* FreeMemoryList;
 size_t i_BlocksMemoryBytes = 1024 * 10;
 
-MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
+MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, const size_t i_BlocksMemoryBytes)
 {
 	assert((pHeapMemory != nullptr) && (i_BlocksMemoryBytes > sizeof(MemoryBlock)));
 
@@ -64,7 +64,7 @@ MemoryBlock* TrackAllocation(MemoryBlock* outstandingAllocations, MemoryBlock* p
 	return outstandingAllocations;
 }
 
-MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size_t sizeAlloc) {
+MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, const size_t sizeAlloc) {
 	MemoryBlock* temp = freeList;
 	while (temp != pFreeBlock) {// if pPtr is somewhere in the middle
 		if (temp->nextMemBlock == NULL) {
@@ -79,7 +79,7 @@ MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size
 	return freeList;
 }
 
-void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
+void* HeapManager::_alloc(const size_t sizeAlloc, const unsigned int alignment) {
 	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
 		cout << "FreeMemoryList Exhausted! "<<"\n";
 		return nullptr;
@@ -122,7 +122,7 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 	return pBlock->baseadd;
 }
 
-void* HeapManager::_alloc(size_t sizeAlloc) {
+void* HeapManager::_alloc(const size_t sizeAlloc) {
 	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
 		cout << "FreeMemoryList Exhausted";
 		return nullptr;
@@ -258,7 +258,7 @@ void HeapManager::collect() {
 	}
 }
 
-bool HeapManager::Contains(void* pPtr) {
+bool HeapManager::Contains(void* pPtr) const{
 	/*if (pPtr >= this->memBlockAdd && pPtr <= this->memBlockAdd + this->size) {
 		return true;
 	}
@@ -282,8 +282,8 @@ bool HeapManager::Contains(void* pPtr) {
 	return true;
 }
 
-bool HeapManager::IsAllocated(void* pPtr) {
-	/*MemoryBlock* temp = outstandingAllocations;
+bool HeapManager::IsAllocated(void* pPtr) const {
+	/*MemoryBlock* temp = outsandingAllocations;
 	while (temp->nextMemBlock!= NULL){
 		if (temp->baseadd == pPtr) return true;
 		temp = temp->nextMemBlock;
@@ -292,27 +292,28 @@ bool HeapManager::IsAllocated(void* pPtr) {
 	return true;
 
 }
-size_t HeapManager::getLargestFreeBlock()
+size_t HeapManager::getLargestFreeBlock() const
 {
-	size_t temp = 0;
-	while (freeList != NULL) {
-		if(temp <= freeList->blocksize)
-			temp = freeList->blocksize;
-		freeList = freeList->nextMemBlock;
+	size_t size = 0;
+	MemoryBlock* temp = freeList;
+	while (temp != NULL) {
+		if(size <= temp->blocksize)
+			size = temp->blocksize;
+		temp = temp->nextMemBlock;
 	}
-	return temp;
+	return size;
 }
-size_t HeapManager::getTotalFreeMemory()
+size_t HeapManager::getTotalFreeMemory() const
 {
-
-	size_t temp = 0;
-	while (freeList != NULL) {
-		temp += freeList->blocksize;
-		freeList = freeList->nextMemBlock;
+	size_t size = 0;
+	MemoryBlock* temp = freeList;
+	while (temp != NULL) {
+		size += temp->blocksize;
+		temp = temp->nextMemBlock;
 	}
-	return temp;
+	return size;
 }
-void HeapManager::ShowFreeBlocks(){
+void HeapManager::ShowFreeBlocks() const {
 	int i = 0;
 	size_t hSize = sizeof(HeapManager);
 	void* start = static_cast<char*>(this->memBlockAdd) - hSize;
@@ -328,7 +329,7 @@ void HeapManager::ShowFreeBlocks(){
 		i++;
 	}
 }
-void HeapManager::ShowOutstandingAllocations() {
+void HeapManager::ShowOutstandingAllocations() const {
 	int i = 0;
 	MemoryBlock* temp = this->outstandingAllocations;
 	while (temp != nullptr) {
