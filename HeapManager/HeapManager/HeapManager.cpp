@@ -9,7 +9,7 @@ using namespace std;
 
 //void* pHeapMemory;
 MemoryBlock* FreeMemoryList;
-size_t i_BlocksMemoryBytes = 1024 * 20;
+size_t i_BlocksMemoryBytes = 1024 * 10;
 
 MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
 {
@@ -92,8 +92,6 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 	MemoryBlock* pFreeBlock = this->freeList;
 	MemoryBlock* prev = NULL;
 
-	
-	
 	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) { //1st block matches size
 		
 		pBlock->baseadd = pFreeBlock->baseadd;
@@ -230,8 +228,9 @@ bool HeapManager::_free(void* pPtr) {
 
 void HeapManager::collect() {
 	MemoryBlock* temp = FreeMemoryList;
+	MemoryBlock* tempFreelist = freeList;
 	while (freeList != NULL && freeList->nextMemBlock != NULL) {
-		if (reinterpret_cast<MemoryBlock*>(reinterpret_cast<uintptr_t>(freeList->baseadd) + freeList->blocksize) == freeList->nextMemBlock->baseadd) {
+		if ((reinterpret_cast<uintptr_t>(freeList->baseadd) + freeList->blocksize) == reinterpret_cast<uintptr_t>(freeList->nextMemBlock->baseadd)) {
 			while (temp->nextMemBlock != NULL) {
 				temp = temp->nextMemBlock;
 			}
