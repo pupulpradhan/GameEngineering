@@ -12,7 +12,6 @@
 
 bool HeapManager_UnitTest()
 {
-	//_CrtSetBreakAlloc(154);
 	using namespace HeapManagerProxy;
 
 	const size_t 		sizeHeap = 1024 * 1024;
@@ -192,7 +191,7 @@ bool HeapManager_UnitTest()
 			success = free(pHeapManager, pPtr);
 			assert(success);
 		}
-		AllocatedAddresses.clear();
+
 #if defined(SUPPORTS_SHOWFREEBLOCKS) || defined(SUPPORTS_SHOWOUTSTANDINGALLOCATIONS)
 		printf("After freeing allocations:\n");
 #ifdef SUPPORTS_SHOWFREEBLOCKS
@@ -247,7 +246,7 @@ bool HeapManager_UnitTest()
 		VirtualFree(pHeapMemory, 0, MEM_RELEASE);
 #endif
 	}
-	AllocatedAddresses.clear();
+
 	// we succeeded
 	_CrtDumpMemoryLeaks();
 	return true;
