@@ -66,15 +66,21 @@ MemoryBlock* TrackAllocation(MemoryBlock* outstandingAllocations, MemoryBlock* p
 
 MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size_t sizeAlloc) {
 	MemoryBlock* temp = freeList;
+	MemoryBlock* prev = freeList;
 	while (temp != pFreeBlock) {// if pPtr is somewhere in the middle
 		if (temp->nextMemBlock == NULL) {
 			//break;
 			cout << "Memeory Block not found in freeList." << "\n";
 			return freeList;
 		}
+		prev = temp;
 		temp = temp->nextMemBlock;
 	}
-	temp->baseadd = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(freeList->baseadd) + sizeAlloc);
+	if (pFreeBlock->blocksize == sizeAlloc) {
+		prev->nextMemBlock = temp->nextMemBlock;
+		return freeList;
+	}
+	temp->baseadd = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pFreeBlock->baseadd) + sizeAlloc);
 	temp->blocksize = pFreeBlock->blocksize - sizeAlloc;
 	return freeList;
 }
@@ -87,12 +93,12 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 	if (this->freeList == NULL) {
 		return nullptr;
 	}
+	
 	MemoryBlock* pBlock = FreeMemoryList;
 	FreeMemoryList = FreeMemoryList->nextMemBlock;
 	MemoryBlock* pFreeBlock = this->freeList;
 	MemoryBlock* prev = NULL;
-
-	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) { //1st block matches size
+	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize >= sizeAlloc) { //1st block matches size
 		
 		pBlock->baseadd = pFreeBlock->baseadd;
 		pBlock->blocksize = sizeAlloc;
@@ -102,29 +108,44 @@ void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
 		
 		return pBlock->baseadd;
 	}
-	while (pFreeBlock->baseadd != NULL && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize <= sizeAlloc) { // matching block is somewhere in between
+	while (pFreeBlock->baseadd != NULL && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize < sizeAlloc) { // matching block is somewhere in between
 		prev = pFreeBlock;
 		pFreeBlock = pFreeBlock->nextMemBlock;
 	}
-	if (pFreeBlock == NULL) {
+	if (pFreeBlock == NULL || pFreeBlock->baseadd == NULL) {
 		cout << "No matching blocksize found";
 		return nullptr;
 	}
+	
 	//check if no block is big enough
 	pBlock->baseadd = pFreeBlock->baseadd;
 	pBlock->blocksize = sizeAlloc;
 	pBlock->nextMemBlock = this->outstandingAllocations;
 	this->outstandingAllocations = pBlock;
 
-	//shrink block
+	//shrink free block
 	this->freeList = ShrinkFreeList(this->freeList, pFreeBlock, sizeAlloc);
+	//return unused free block to freememorylist
+	MemoryBlock* temp = FreeMemoryList;
+	if (pFreeBlock->blocksize == sizeAlloc) {
+		while (temp->nextMemBlock != NULL) {
+			temp = temp->nextMemBlock;
+		}
+		temp->nextMemBlock = pFreeBlock;
+		temp->nextMemBlock->baseadd = nullptr;
+		temp->nextMemBlock->blocksize = 0;
+		temp->nextMemBlock->nextMemBlock = nullptr;
+	}
 
 	return pBlock->baseadd;
 }
 
 void* HeapManager::_alloc(size_t sizeAlloc) {
 	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
-		cout << "FreeMemoryList Exhausted";
+		cout << "FreeMemoryList Exhausted! " << "\n";
+		return nullptr;
+	}
+	if (this->freeList == NULL) {
 		return nullptr;
 	}
 	MemoryBlock* pBlock = FreeMemoryList;
@@ -132,7 +153,7 @@ void* HeapManager::_alloc(size_t sizeAlloc) {
 	MemoryBlock* pFreeBlock = this->freeList;
 	MemoryBlock* prev = NULL;
 
-	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize > sizeAlloc) { //1st block matches size
+	if (pFreeBlock->baseadd != NULL && pFreeBlock->blocksize >= sizeAlloc) { //1st block matches size
 
 		pBlock->baseadd = pFreeBlock->baseadd;
 		pBlock->blocksize = sizeAlloc;
@@ -142,22 +163,34 @@ void* HeapManager::_alloc(size_t sizeAlloc) {
 
 		return pBlock->baseadd;
 	}
-	while (pFreeBlock->baseadd != NULL && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize <= sizeAlloc) { // matching block is somewhere in between
+	while (pFreeBlock->baseadd != NULL && pFreeBlock->nextMemBlock != NULL && pFreeBlock->blocksize < sizeAlloc) { // matching block is somewhere in between
 		prev = pFreeBlock;
 		pFreeBlock = pFreeBlock->nextMemBlock;
 	}
-	if (pFreeBlock == NULL) {
+	if (pFreeBlock == NULL || pFreeBlock->baseadd == NULL) {
 		cout << "No matching blocksize found";
 		return nullptr;
 	}
+
 	//check if no block is big enough
 	pBlock->baseadd = pFreeBlock->baseadd;
 	pBlock->blocksize = sizeAlloc;
 	pBlock->nextMemBlock = this->outstandingAllocations;
 	this->outstandingAllocations = pBlock;
 
-	//shrink block
+	//shrink free block
 	this->freeList = ShrinkFreeList(this->freeList, pFreeBlock, sizeAlloc);
+	//return unused free block to freememorylist
+	MemoryBlock* temp = FreeMemoryList;
+	if (pFreeBlock->blocksize == sizeAlloc) {
+		while (temp->nextMemBlock != NULL) {
+			temp = temp->nextMemBlock;
+		}
+		temp->nextMemBlock = pFreeBlock;
+		temp->nextMemBlock->baseadd = nullptr;
+		temp->nextMemBlock->blocksize = 0;
+		temp->nextMemBlock->nextMemBlock = nullptr;
+	}
 
 	return pBlock->baseadd;
 }
@@ -219,29 +252,44 @@ bool HeapManager::_free(void* pPtr) {
 	}
 	this->outstandingAllocations = ShrinkOutstandingAllocations(this->outstandingAllocations, pPtr);
 	assert(pBlock);
+	/*pBlock->nextMemBlock = this->freeList;
+	this->freeList = pBlock;*/
 
 	//put the block on the Freelist
-	pBlock->nextMemBlock = this->freeList;
-	this->freeList = pBlock;
+	MemoryBlock* temp = this->freeList;
+	MemoryBlock* prev = this->freeList;
+	if (pBlock->baseadd < temp->baseadd) {
+		pBlock->nextMemBlock = this->freeList;
+		this->freeList = pBlock;
+	}
+	else {
+		while (temp != NULL && pBlock->baseadd >= temp->baseadd) {
+			prev = temp;
+			temp = temp->nextMemBlock;
+		}
+		pBlock->nextMemBlock = temp;
+		prev->nextMemBlock = pBlock;
+	}
 	return true;
 }
 
 void HeapManager::collect() {
 	MemoryBlock* temp = FreeMemoryList;
 	MemoryBlock* tempFreelist = freeList;
-	while (freeList != NULL && freeList->nextMemBlock != NULL) {
-		if ((reinterpret_cast<uintptr_t>(freeList->baseadd) + freeList->blocksize) == reinterpret_cast<uintptr_t>(freeList->nextMemBlock->baseadd)) {
+	while (tempFreelist != NULL && tempFreelist->nextMemBlock != NULL) {
+		if ((reinterpret_cast<uintptr_t>(tempFreelist->baseadd) + tempFreelist->blocksize) == reinterpret_cast<uintptr_t>(tempFreelist->nextMemBlock->baseadd)) {
 			while (temp->nextMemBlock != NULL) {
 				temp = temp->nextMemBlock;
 			}
-			temp->nextMemBlock = freeList->nextMemBlock;
+			tempFreelist->blocksize += tempFreelist->nextMemBlock->blocksize;
+			temp->nextMemBlock = tempFreelist->nextMemBlock;
+			tempFreelist->nextMemBlock = tempFreelist->nextMemBlock->nextMemBlock;
 			temp->nextMemBlock->baseadd = nullptr;
 			temp->nextMemBlock->blocksize = 0;
 			temp->nextMemBlock->nextMemBlock = nullptr;
-			freeList->blocksize += freeList->nextMemBlock->blocksize;
-			freeList->nextMemBlock = freeList->nextMemBlock->nextMemBlock;
+			
 		}
-		freeList = freeList->nextMemBlock;
+		tempFreelist = tempFreelist->nextMemBlock;
 	}
 }
 
@@ -307,7 +355,7 @@ void HeapManager::ShowFreeBlocks(){
 	void* end = reinterpret_cast<void*>(static_cast<char*>(start) + totalSize);
 	MemoryBlock* temp = this->freeList;
 	while (temp != nullptr && temp != tail) {
-		cout << "Free Block " << i << " : " << temp << " with size "<< temp->blocksize<<endl;
+		cout << "Free Block " << i << " : " << temp->baseadd << " with size "<< temp->blocksize<<endl;
 		if (temp->nextMemBlock == NULL) {
 			break;
 		}

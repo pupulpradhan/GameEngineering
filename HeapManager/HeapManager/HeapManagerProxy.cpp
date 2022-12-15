@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#define __TRACK_ALLOCATIONS
 
 // This is your include file for your heap manager. It should have a class definition for HeapManager.
 // If you use another name for the class, header or functions just replace what needs to be in here.
@@ -90,7 +91,7 @@ namespace HeapManagerProxy
 	void ShowOutstandingAllocations(HeapManager* i_pManager)
 	{
 		assert(i_pManager);
-		i_pManager->ShowOutstandingAllocations();
+		//i_pManager->ShowOutstandingAllocations();
 #ifdef __TRACK_ALLOCATIONS
 		i_pManager->ShowOutstandingAllocations();
 #else
