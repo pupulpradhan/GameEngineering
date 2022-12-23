@@ -1,5 +1,5 @@
 #include <inttypes.h>
-#include <malloc.h>
+#include "Allocators.h"
 
 #include <stdio.h>
 
@@ -44,4 +44,51 @@ void operator delete [](void * i_ptr)
 	// replace with calls to your HeapManager or FixedSizeAllocators
 	printf("delete [] 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(i_ptr));
 	return _aligned_free(i_ptr);
+}
+
+Allocators::~Allocators()
+{
+	delete FreeAddressList;
+}
+
+void* Allocators::alloc(size_t size)
+{
+	if (size > DataSize)
+	{
+		return nullptr;
+	}
+	size_t index = 0;
+	if (!FreeAddressList->FindFirstSetBit(index))
+	{
+		return nullptr;
+	}
+	FreeAddressList->clearBit(index);
+	assert(reinterpret_cast<void*>(start + index * DataSize));
+	allocations++;
+	return reinterpret_cast<void*>(start + index * DataSize);
+}
+
+bool Allocators::free(void* ptr)
+{
+	//assert(ptr);
+	ptrdiff_t diff = reinterpret_cast<uintptr_t>(ptr) - start;
+	if (diff > 0 && diff % DataSize == 0 && (diff / DataSize) < Numberofblocks)
+	{
+		ptrdiff_t difference = reinterpret_cast<uintptr_t>(ptr) - start;
+		FreeAddressList->setBit(difference / DataSize);
+		return true;
+	}
+	return false;
+}
+
+void Allocators::destroy() {
+	FreeAddressList->clearAll();
+}
+
+void Allocators::showOutstandingBlocks() const
+{
+}
+
+void Allocators::showFreeBlocks() const
+{
 }

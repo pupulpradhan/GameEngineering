@@ -5,6 +5,11 @@ using namespace HeapManagerProxy;
 
 bool InitializeMemorySystem(void * i_pHeapMemory, size_t i_sizeHeapMemory, unsigned int i_OptionalNumDescriptors)
 {
+	auto hm = CreateHeapManager(i_pHeapMemory, i_sizeHeapMemory, i_OptionalNumDescriptors);
+	hm->FSAInitialize(16, 100);
+	hm->FSAInitialize(32, 200);
+	hm->FSAInitialize(96, 400);
+	return hm;
 	CreateHeapManager(i_pHeapMemory, i_sizeHeapMemory, i_OptionalNumDescriptors);
 	// create your HeapManager and FixedSizeAllocators
 	return true;
