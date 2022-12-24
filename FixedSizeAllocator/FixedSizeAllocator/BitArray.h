@@ -13,11 +13,13 @@ private:
 	Bitdata* p_Bitdata;
 	size_t numofblocks;
 	const size_t BitsPerElement = sizeof(Bitdata) * 8;
-	size_t T_Bytes;
+	size_t TotalBytes;
 public:
 	BitArray(size_t numbits);
 	~BitArray();
 	bool FindFirstSetBit(size_t& b_Index);
+	bool FindFirstClearBit(size_t& b_Index);
+	bool isBitSet(size_t bitIndex);
 	void setAll();
 	void clearAll();
 	bool operator[](size_t index);
