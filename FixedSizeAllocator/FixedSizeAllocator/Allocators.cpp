@@ -3,52 +3,9 @@
 
 #include <stdio.h>
 
-
-void * __cdecl malloc(size_t i_size)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("malloc %zu\n", i_size);
-	return _aligned_malloc(i_size, 4);
-}
-
-void __cdecl free(void * i_ptr)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("free 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(i_ptr));
-	return _aligned_free(i_ptr);
-}
-
-void * operator new(size_t i_size)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("new %zu\n", i_size);
-	return _aligned_malloc(i_size, 4);
-}
-
-void operator delete(void * i_ptr)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("delete 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(i_ptr));
-	return _aligned_free(i_ptr);
-}
-
-void * operator new[](size_t i_size)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("new [] %zu\n", i_size);
-	return _aligned_malloc(i_size, 4);
-}
-
-void operator delete [](void * i_ptr)
-{
-	// replace with calls to your HeapManager or FixedSizeAllocators
-	printf("delete [] 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(i_ptr));
-	return _aligned_free(i_ptr);
-}
-
 Allocators::~Allocators()
 {
-	delete FreeAddressList;
+	delete FreeList;
 }
 
 void* Allocators::alloc(size_t size)
@@ -58,13 +15,14 @@ void* Allocators::alloc(size_t size)
 		return nullptr;
 	}
 	size_t index = 0;
-	if (!FreeAddressList->FindFirstSetBit(index))
+	if (!FreeList->FindFirstSetBit(index))
 	{
 		return nullptr;
 	}
-	FreeAddressList->clearBit(index);
+	FreeList->clearBit(index);
 	assert(reinterpret_cast<void*>(start + index * DataSize));
 	allocations++;
+	printf("malloc %zu\n", size);
 	return reinterpret_cast<void*>(start + index * DataSize);
 }
 
@@ -75,14 +33,15 @@ bool Allocators::free(void* ptr)
 	if (diff > 0 && diff % DataSize == 0 && (diff / DataSize) < Numberofblocks)
 	{
 		ptrdiff_t difference = reinterpret_cast<uintptr_t>(ptr) - start;
-		FreeAddressList->setBit(difference / DataSize);
+		FreeList->setBit(difference / DataSize);
+		printf("free 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(ptr));
 		return true;
 	}
 	return false;
 }
 
 void Allocators::destroy() {
-	FreeAddressList->clearAll();
+	FreeList->clearAll();
 }
 
 void Allocators::showOutstandingBlocks() const

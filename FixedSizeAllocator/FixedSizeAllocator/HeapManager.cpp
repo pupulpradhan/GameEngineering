@@ -85,7 +85,24 @@ MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size
 	return freeList;
 }
 
+void HeapManager::FSAInitialize(size_t size, size_t numblock)
+{
+	Allocators* allocate = new Allocators(size, numblock);
+	allocate->start = reinterpret_cast<uintptr_t>(_alloc(size * numblock));
+	if (allocatorindex < 3)
+	{
+		allocators[allocatorindex] = allocate;
+		allocatorindex++;
+	}
+}
+
 void* HeapManager::_alloc(size_t sizeAlloc, const unsigned int alignment) {
+
+	for (size_t i = 0; i < allocatorindex; i++) {
+		void* ptr = allocators[i]->alloc(sizeAlloc);
+		if (ptr != nullptr) return ptr;
+	}
+
 	if (FreeMemoryList == NULL || FreeMemoryList->nextMemBlock == NULL) {
 		cout << "FreeMemoryList Exhausted! "<<"\n";
 		return nullptr;
