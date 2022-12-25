@@ -28,7 +28,7 @@ void* Allocators::alloc(size_t size)
 
 bool Allocators::free(void* ptr)
 {
-	//assert(ptr);
+
 	ptrdiff_t diff = reinterpret_cast<uintptr_t>(ptr) - start;
 	if (diff > 0 && diff % DataSize == 0 && (diff / DataSize) < Numberofblocks)
 	{

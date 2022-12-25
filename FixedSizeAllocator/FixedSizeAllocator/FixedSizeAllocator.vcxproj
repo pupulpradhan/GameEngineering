@@ -25,6 +25,7 @@
     <ClCompile Include="HeapManagerProxy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MemorySystem.cpp" />
+    <ClCompile Include="Overload.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Allocators.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="HeapManager.h" />
     <ClInclude Include="HeapManagerProxy.h" />
     <ClInclude Include="MemorySystem.h" />
+    <ClInclude Include="Overload.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

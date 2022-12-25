@@ -1,6 +1,7 @@
 #include <Windows.h>
 
 #include "MemorySystem.h"
+#include "Overload.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -12,7 +13,7 @@
 #include <crtdbg.h>
 #endif // _DEBUG
 
-bool MemorySystem_UnitTest();
+bool MemorySystem_UnitTest(HeapManager*);
 
 int main(int i_arg, char **)
 {
@@ -26,13 +27,13 @@ int main(int i_arg, char **)
 	assert(pHeapMemory);
 
 	// Create your HeapManager and FixedSizeAllocators.
-	InitializeMemorySystem(pHeapMemory, sizeHeap, numDescriptors);
+	auto heap = InitializeMemorySystem(pHeapMemory, sizeHeap, numDescriptors);
 
-	bool success = MemorySystem_UnitTest();
+	bool success = MemorySystem_UnitTest(heap);
 	assert(success);
 
 	// Clean up your Memory System (HeapManager and FixedSizeAllocators)
-	DestroyMemorySystem();
+	DestroyMemorySystem(heap);
 
 	HeapFree(GetProcessHeap(), 0, pHeapMemory);
 
@@ -44,7 +45,7 @@ int main(int i_arg, char **)
 	return 0;
 }
 
-bool MemorySystem_UnitTest()
+bool MemorySystem_UnitTest(HeapManager* heap)
 {
 	const size_t maxAllocations = 10 * 1024;
 	std::vector<void *> AllocatedAddresses;
@@ -67,14 +68,14 @@ bool MemorySystem_UnitTest()
 
 		size_t			sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 
-		void * pPtr = malloc(sizeAlloc);
+		void * pPtr = malloc(sizeAlloc, heap);
 
 		// if allocation failed see if garbage collecting will create a large enough block
 		if (pPtr == nullptr)
 		{
-			Collect();
+			Collect(heap);
 
-			pPtr = malloc(sizeAlloc);
+			pPtr = malloc(sizeAlloc, heap);
 
 			// if not we're done. go on to cleanup phase of test
 			if (pPtr == nullptr)
@@ -95,12 +96,12 @@ bool MemorySystem_UnitTest()
 			void * pPtrToFree = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
-			free(pPtrToFree);
+			free(pPtrToFree, heap);
 			numFrees++;
 		}
 		else if ((rand() % garbageCollectAboutEvery) == 0)
 		{
-			Collect();
+			Collect(heap);
 
 			numCollects++;
 		}
@@ -123,15 +124,15 @@ bool MemorySystem_UnitTest()
 		}
 
 		// do garbage collection
-		Collect();
+		Collect(heap);
 		// our heap should be one single block, all the memory it started with
 
 		// do a large test allocation to see if garbage collection worked
-		void * pPtr = malloc(totalAllocated / 2);
+		void * pPtr = malloc(totalAllocated / 2,  heap);
 
 		if (pPtr)
 		{
-			free(pPtr);
+			free(pPtr, heap);
 		}
 		else
 		{

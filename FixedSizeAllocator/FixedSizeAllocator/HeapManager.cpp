@@ -85,7 +85,7 @@ MemoryBlock* ShrinkFreeList(MemoryBlock* freeList, MemoryBlock* pFreeBlock, size
 	return freeList;
 }
 
-void HeapManager::FSAInitialize(size_t size, size_t numblock)
+void HeapManager::InitializeFixedSizedAllocator(size_t size, size_t numblock)
 {
 	Allocators* allocate = new Allocators(size, numblock);
 	allocate->start = reinterpret_cast<uintptr_t>(_alloc(size * numblock));
@@ -393,6 +393,12 @@ void HeapManager::ShowOutstandingAllocations() {
 	}
 }
 void HeapManager::destroy() {
+	for (size_t i = 0; i < allocatorindex; i++) {
+		allocators[i]->destroy();
+		free(reinterpret_cast<void*>(allocators[i]->start));
+		delete allocators[i];
+	}
+	delete[] allocators;
 }
 
 

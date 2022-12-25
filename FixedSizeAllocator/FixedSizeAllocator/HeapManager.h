@@ -18,6 +18,7 @@ private:
 	size_t size;
 	//unsigned int descriptors;
 public:
+	static HeapManager* instance;
 	HeapManager* create(void* i_pMemory, size_t i_sizeMemory, unsigned int i_numDescriptors); //done
 	Allocators* allocators[3];
 	int allocatorindex = 0;
@@ -25,7 +26,7 @@ public:
 	void* _alloc(size_t i_size); // done
 	void* _alloc(size_t i_size, unsigned int i_alignment); //done
 	bool _free(void* i_ptr); // done
-	void FSAInitialize(size_t size, size_t numblock);
+	void InitializeFixedSizedAllocator(size_t size, size_t numblock);
 	void collect();
 	bool Contains(void* i_ptr);
 	bool IsAllocated(void* i_ptr);
