@@ -18,7 +18,7 @@ private:
 	size_t size;
 	//unsigned int descriptors;
 public:
-	static HeapManager* instance;
+	static HeapManager* heapInstance;
 	HeapManager* create(void* i_pMemory, size_t i_sizeMemory, unsigned int i_numDescriptors); //done
 	Allocators* allocators[3];
 	int allocatorindex = 0;

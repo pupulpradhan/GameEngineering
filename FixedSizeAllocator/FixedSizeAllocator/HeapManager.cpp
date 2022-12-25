@@ -11,6 +11,8 @@ using namespace std;
 MemoryBlock* FreeMemoryList;
 size_t i_BlocksMemoryBytes = 1024 * 10;
 
+HeapManager* HeapManager::heapInstance = nullptr;
+
 MemoryBlock* InitializeMemoryBlocks(void* pHeapMemory, size_t i_BlocksMemoryBytes)
 {
 	assert((pHeapMemory != nullptr) && (i_BlocksMemoryBytes > sizeof(MemoryBlock)));
@@ -53,7 +55,7 @@ HeapManager* HeapManager::create(void* pHeapMemory, const size_t sizeHeap, const
 	pHeapManager->tail->blocksize = 0;
 	pHeapManager->tail->baseadd = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pHeapMemory) + sizeHeap);
 	pHeapManager->tail->nextMemBlock = nullptr;
-
+	heapInstance = pHeapManager;
 	return pHeapManager;
 }
 
